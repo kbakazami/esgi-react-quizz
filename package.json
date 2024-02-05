@@ -12,6 +12,7 @@
     "next": "14.0.4",
     "react": "^18",
     "react-dom": "^18",
+    "sass": "^1.70.0",
     "socket.io": "^4.7.4"
   },
   "devDependencies": {
