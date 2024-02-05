@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'Poppins';
+    src: url("./Poppins-bold.ttf");
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url("./Poppins-Regular.ttf");
+    font-weight: 400;
+    font-style: normal;
+}
+
+body {
+    @apply text-primary font-poppins text-base bg-secondary;
+
+    .page-wrapper {
+        @apply flex flex-col;
+        min-height: calc(100vh - 3.5rem);
+
+        #main-content {
+            @apply flex flex-col;
+            flex-grow: 1;
+        }
+    }
+}
+
+h1 {
+    @apply text-3xl font-bold text-center mt-10;
+}
+
+.link {
+    @apply relative;
+
+    &:hover:before {
+        content: '';
+        @apply w-16 block bg-primary h-0.5 absolute -bottom-1 left-1/2 -translate-x-1/2;
+    }
+}
+
+.btn {
+    &.primary {
+        @apply border border-primary rounded-md px-5 py-3 bg-secondary ease-in-out duration-300;
+
+        &:hover {
+            @apply bg-primary text-white;
+        }
+    }
+}
+
+.difficulty, .room-type, .category {
+    li {
+        @apply relative border border-primary rounded-md p-4 min-w-24 min-h-12 bg-secondary ease-in-out duration-300 flex;
+
+        &:hover {
+            @apply bg-primary text-white;
+        }
+
+        &.category {
+            @apply min-w-40;
+        }
+    }
+
+    input,label {
+        @apply absolute flex inset-0 cursor-pointer justify-center my-auto p-1 items-center;
+    }
+
+    input[type="radio"] {
+        opacity: 0;
+        z-index: 100;
+    }
+
+    input[type="radio"]:checked + label {
+        @apply bg-primary text-white;
+    }
+}
+
+input[type="number"], input[type='text'] {
+    @apply bg-transparent border-b border-primary placeholder:italic placeholder-primary ring-0 outline-0;
+}
