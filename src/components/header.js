@@ -19,10 +19,10 @@ export default function Header() {
                 </Link>
             </div>
             <div className={"flex flex-row items-center justify-end gap-x-10 w-2/12"}>
-                <Link href={'#'} className={"link"}>
+                <Link href={'/register'} className={"link"}>
                     Inscription
                 </Link>
-                <Link href={'#'} className={"btn primary"}>
+                <Link href={'/login'} className={"btn primary"}>
                     Connexion
                 </Link>
             </div>
