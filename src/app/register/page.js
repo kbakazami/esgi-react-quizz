@@ -1,7 +1,11 @@
 "use client"
 import { useForm } from "react-hook-form"
 import { toast } from 'react-toastify';
+import {useSession} from "next-auth/react";
+import {useRouter} from "next/navigation";
 export default function Register() {
+    const router = useRouter();
+    const {data: session, status} = useSession()
 
     const {
         setError,
@@ -9,6 +13,7 @@ export default function Register() {
         handleSubmit,
         formState: { errors },
     } = useForm()
+
 
     const onSubmit = async (data) => {
         const rawResponse = await fetch("/api/users", {
@@ -24,6 +29,14 @@ export default function Register() {
             const json = await rawResponse.json()
             setError("email", {"message": json?.detail ?? "Oops! Impossible de créer un compte", "type": "error"})
         }
+    }
+
+    if(status === "loading") {
+        return null;
+    }
+
+    if(status === "authenticated") {
+        router.push('/')
     }
 
     return(
