@@ -40,3 +40,6 @@ next-env.d.ts
 
 #volume
 esgi_react_quizz/*
+
+#server
+server/node_modules

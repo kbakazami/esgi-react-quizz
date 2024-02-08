@@ -1,35 +1,19 @@
 "use client";
-
-import CustomRadioWrapper from "@/components/custom-radio-wrapper";
-import CustomRadio from "@/components/custom-radio";
 import { useForm, SubmitHandler } from "react-hook-form"
-import {io as ClientIO} from "socket.io-client";
+import { io } from "socket.io-client";
 import {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 
 export default function CreateRoom() {
-    const [socket, setSocket] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
     const [room, setRoom] = useState(false);
     const router = useRouter();
 
+    const socket = io('http://localhost:3001');
+
     useEffect(() => {
-        const socket = new ClientIO({
-            path: '/api/socket/io',
-            addTrailingSlash: false,
-        }, process.env.NEXT_PUBLIC_SITE_URL);
 
-        socket.on('connect', () => {
-            setIsConnected(true);
-            console.log('client connected');
-        });
 
-        socket.on('disconnect', () => {
-            setIsConnected(false);
-            console.log('client disconnected');
-        });
-
-        setSocket(socket);
     },[]);
 
     const roomType = [
@@ -50,10 +34,8 @@ export default function CreateRoom() {
         formState: { errors },
     } = useForm()
 
-
-
-    const onSubmit = async (data) => {
-        console.log(data);
+    const onSubmit = (data) => {
+        socket.emit("create-room", data);
     }
 
     return (
