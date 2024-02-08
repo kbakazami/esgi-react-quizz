@@ -2,6 +2,7 @@ import express from 'express';
 import { createServer } from 'node:http';
 import cors from 'cors';
 import { Server } from 'socket.io';
+import createRoom from "./services/room.js";
 
 
 const app = express();
@@ -17,8 +18,8 @@ app.use(cors({
 }));
 
 io.on('connection', (socket) => {
-    socket.on('create-room', (room) => {
-        console.log(room);
+    socket.on('create-room', (data) => {
+        createRoom(data);
     })
 })
 
