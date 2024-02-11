@@ -1,6 +1,6 @@
 "use client";
 
-export default function JoinRoom() {
+export default function JoinRoomPage() {
     return (
         <div>
             <h1>Rejoindre une salle</h1>

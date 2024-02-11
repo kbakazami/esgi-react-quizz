@@ -14,17 +14,17 @@ export default function Header() {
     return (
         <nav className={"flex flex-row items-center justify-between"}>
             <div className={"w-2/12"}>
-                <Link href={'/'}>
+                <button>
                     <Image src={logo} alt={"Logo"}/>
-                </Link>
+                </button>
             </div>
             <div className={"flex flex-row items-center justify-center gap-x-24 w-8/12"}>
-                <Link href={'/room/join'} className={"link"}>
+                <button className={"link"}>
                     Rejoindre une salle
-                </Link>
-                <Link href={'/room/create'} className={"link"}>
+                </button>
+                <button className={"link"}>
                     Créer une salle
-                </Link>
+                </button>
             </div>
             {status === 'authenticated' ? (
                 <>

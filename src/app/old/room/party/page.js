@@ -1,4 +1,4 @@
-export default function PartyRoom() {
+export default function PartyRoomPage() {
     return (
         <div className={'h-full w-full border border-primary mt-12 rounded-md p-8'}>
             <p className={'underline-offset-8 underline'}>Question n°1</p>

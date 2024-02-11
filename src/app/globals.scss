@@ -83,3 +83,7 @@ h1 {
 input[type="number"], input[type='text'], input[type='email'], input[type='password'] {
     @apply bg-transparent border-b border-primary placeholder:italic placeholder-primary ring-0 outline-0;
 }
+
+.error-form {
+    @apply italic text-primary mt-2;
+}

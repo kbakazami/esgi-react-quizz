@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 import {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 
-export default function CreateRoom() {
+export default function CreateRoomPage() {
     const [isConnected, setIsConnected] = useState(false);
     const [room, setRoom] = useState(false);
     const router = useRouter();
