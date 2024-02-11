@@ -5,6 +5,7 @@ import CreateRoom from "@/components/room/create";
 import JoinRoom from "@/components/room/join";
 import RoomParty from "@/components/room/party";
 import CreatedRoom from "@/components/room/created";
+import {useSession} from "next-auth/react";
 
 const socket = io('http://localhost:3001');
 
@@ -14,6 +15,8 @@ export default function Home() {
     const [roomCreated, setRoomCreated] = useState(false);
     const [roomId, setRoomId] = useState(false);
     const [users, setUsers] = useState([]);
+
+    const {data: session, status} = useSession();
 
     useEffect(() => {
         socket.on('connect', () => {
@@ -65,13 +68,13 @@ export default function Home() {
             }
 
             {
-                !roomJoined && !roomCreated && createOrJoin === 'create' && <CreateRoom socket={socket}/>
+                !roomJoined && !roomCreated && createOrJoin === 'create' && <CreateRoom socket={socket} session={session} status={status}/>
             }
             {
                 !roomJoined && roomCreated && createOrJoin === 'create' && <CreatedRoom socket={socket} roomId={roomId}/>
             }
             {
-                !roomJoined && createOrJoin === 'join' && <JoinRoom socket={socket}/>
+                !roomJoined && createOrJoin === 'join' && <JoinRoom socket={socket} session={session} status={status}/>
             }
             {
                 roomJoined && <RoomParty socket={socket} users={users}/>

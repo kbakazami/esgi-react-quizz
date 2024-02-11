@@ -1,13 +1,14 @@
 "use client";
 import { useForm } from "react-hook-form"
 import ErrorMessage from "@/components/error-message";
+import {useEffect} from "react";
+import {useSession} from "next-auth/react";
 
-export default function JoinRoom({socket}) {
-
+export default function JoinRoom({socket, session, status}) {
     const {
         register,
         handleSubmit,
-        watch,
+        setValue,
         formState: { errors },
     } = useForm()
 
@@ -20,6 +21,13 @@ export default function JoinRoom({socket}) {
         }
     }
 
+    useEffect(() => {
+        if(status === 'authenticated') {
+            setValue('username', session?.user?.name);
+        }
+    }, [status]);
+
+
     return (
         <div>
             <h1>Rejoindre une salle</h1>
@@ -30,6 +38,7 @@ export default function JoinRoom({socket}) {
                 </div>
 
                 <input {...register('roomId')} type={'text'} placeholder={'Exemple : ABC123'} className={'mx-auto'}/>
+                <p className={"mx-auto"}>Si vous voulez rejoindre une salle publique il n'y a pas besoin de rentrer de code</p>
                 <button type={'submit'} className={'btn primary w-1/6 mx-auto'}>Rejoindre</button>
             </form>
         </div>

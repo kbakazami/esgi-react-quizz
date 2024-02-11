@@ -5,7 +5,7 @@ import Link from "next/link";
 import {signOut, useSession} from "next-auth/react";
 
 export default function Header() {
-    const {data: session, status} = useSession()
+    const {data: session, status} = useSession();
     if(status === 'loading') {
         return null;
     }
@@ -13,12 +13,12 @@ export default function Header() {
 
     return (
         <nav className={"flex flex-row items-center justify-between"}>
-            <div className={"w-2/12"}>
-                <button>
+            <div className={"w-4/12"}>
+                <Link href={"/"}>
                     <Image src={logo} alt={"Logo"}/>
-                </button>
+                </Link>
             </div>
-            <div className={"flex flex-row items-center justify-center gap-x-24 w-8/12"}>
+            <div className={"flex flex-row items-center justify-center gap-x-24 w-4/12"}>
                 <button className={"link"}>
                     Rejoindre une salle
                 </button>
@@ -27,14 +27,14 @@ export default function Header() {
                 </button>
             </div>
             {status === 'authenticated' ? (
-                <>
-                    <p>Connecté en tant que : { session?.user?.name }</p>
+                <div className={"flex flex-row items-center justify-end gap-x-10 w-4/12"}>
+                    <p>Connecté(e) en tant que : { session?.user?.name }</p>
                     <span onClick={() => signOut({redirect: "/"})} className={"btn primary cursor-pointer"}>
                         Déconnexion
                     </span>
-                </>
+                </div>
                 ) : (
-                <div className={"flex flex-row items-center justify-end gap-x-10 w-2/12"}>
+                <div className={"flex flex-row items-center justify-end gap-x-10 w-4/12"}>
                     <Link href={'/register'} className={"link"}>
                         Inscription
                     </Link>

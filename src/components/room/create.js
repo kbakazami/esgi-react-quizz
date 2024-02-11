@@ -3,8 +3,9 @@ import { useForm } from "react-hook-form"
 import {useEffect, useState} from "react";
 import RoomParty from "@/components/room/party";
 import ErrorMessage from "@/components/error-message";
+import {useSession} from "next-auth/react";
 
-export default function CreateRoom({socket}) {
+export default function CreateRoom({socket, session, status}) {
 
     const roomType = [
         {id: 'private', value: 'Privée', name: 'type'},
@@ -21,12 +22,19 @@ export default function CreateRoom({socket}) {
         register,
         handleSubmit,
         formState: { errors },
+        setValue,
     } = useForm()
 
     const onSubmit = (data) => {
         data.socketId = socket.id;
         socket.emit('create-room', data);
     }
+
+    useEffect(() => {
+        if(status === 'authenticated') {
+            setValue('username', session?.user?.name);
+        }
+    }, [status]);
 
     return (
         <div>
