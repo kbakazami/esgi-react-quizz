@@ -34,6 +34,10 @@ h1 {
     @apply text-3xl font-bold text-center mt-10;
 }
 
+h2 {
+    @apply text-xl;
+}
+
 .link {
     @apply relative;
 
@@ -50,10 +54,18 @@ h1 {
         &:hover {
             @apply bg-primary text-white;
         }
+
+        &:disabled {
+            @apply border-gray-500 bg-gray-500 text-primary;
+
+            &:hover {
+                @apply bg-gray-500 text-primary;
+            }
+        }
     }
 }
 
-.difficulty, .room-type, .category {
+.difficulty, .room-type, .category, .room {
     li {
         @apply relative border border-primary rounded-md p-4 min-w-24 min-h-12 bg-secondary ease-in-out duration-300 flex;
 

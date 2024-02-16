@@ -2,7 +2,6 @@
 import { useForm } from "react-hook-form"
 import ErrorMessage from "@/components/error-message";
 import {useEffect} from "react";
-import {useSession} from "next-auth/react";
 
 export default function JoinRoom({socket, session, status}) {
     const {
@@ -10,15 +9,10 @@ export default function JoinRoom({socket, session, status}) {
         handleSubmit,
         setValue,
         formState: { errors },
-    } = useForm()
+    } = useForm();
 
     const onSubmit = (data) => {
-        if(data.roomId !== '')
-        {
-            socket.emit('join-room', data);
-        } else {
-            socket.emit('join-public-room', data);
-        }
+        socket.emit('join-room', data);
     }
 
     useEffect(() => {
@@ -30,7 +24,7 @@ export default function JoinRoom({socket, session, status}) {
 
     return (
         <div>
-            <h1>Rejoindre une salle</h1>
+            <h1>Rejoindre une salle privée</h1>
             <form onSubmit={handleSubmit(onSubmit)} className={"flex flex-col gap-y-8 mt-16"}>
                 <div className={"flex flex-col"}>
                     <input {...register('username', { required: true })} type={'text'} placeholder={'Nom d\'utilisateur'} className={'mx-auto'}/>
@@ -38,7 +32,6 @@ export default function JoinRoom({socket, session, status}) {
                 </div>
 
                 <input {...register('roomId')} type={'text'} placeholder={'Exemple : ABC123'} className={'mx-auto'}/>
-                <p className={"mx-auto"}>Si vous voulez rejoindre une salle publique il n'y a pas besoin de rentrer de code</p>
                 <button type={'submit'} className={'btn primary w-1/6 mx-auto'}>Rejoindre</button>
             </form>
         </div>
