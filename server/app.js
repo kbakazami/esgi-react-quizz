@@ -100,12 +100,26 @@ io.on('connection', (socket) => {
 
         //Subscribe room and users to a channel and emit event to this channel
         socket.join(roomObject.roomId);
+        socket.join(data.socketId);
         io.to(roomObject.roomId).emit('room-created', true);
         io.to(roomObject.roomId).emit('get-room-id', roomObject.roomId);
         io.to(roomObject.roomId).emit('get-users', roomObject.users);
-        io.to(roomObject.roomId).emit('get-room', roomObject);
-        io.to(roomObject.roomId).emit('get-room-question', roomObject.questions);
         io.emit('public-rooms', publicRooms);
+    });
+
+    socket.on('begin-party', (roomId) => {
+        socket.join(roomId);
+        io.to(roomId).emit('room-joined', true);
+
+        rooms.some(room => {
+            if(roomId === room.roomId)
+            {
+                io.to(roomId).emit('get-room', room);
+                io.to(roomId).emit('get-room-question', room.questions);
+                return true;
+            }
+            return false;
+        });
     });
 
     socket.on('join-created-room', (data) => {

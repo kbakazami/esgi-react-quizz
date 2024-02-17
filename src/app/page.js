@@ -32,6 +32,13 @@ export default function Home() {
             setRoomJoined(value);
         });
 
+        socket.on('room-joined-waiting', (value) => {
+            if(value)
+            {
+                setCreateOrJoin('waiting');
+            }
+        });
+
         socket.on('room-created', (data) => {
             setRoomCreated(data);
         });
@@ -45,6 +52,7 @@ export default function Home() {
         });
 
         socket.on('get-room', (data) => {
+            console.log('get-room data -- ', data);
             setRoomInformations(data);
         });
 
@@ -53,6 +61,7 @@ export default function Home() {
         });
 
         socket.on('get-room-question', (data) => {
+            console.log('get-room question data -- ', data);
             setRoomQuestion(data);
         });
 
@@ -102,7 +111,10 @@ export default function Home() {
                 !roomJoined && !roomCreated && createOrJoin === 'create' && <CreateRoom socket={socket} session={session} status={status}/>
             }
             {
-                !roomJoined && roomCreated && createOrJoin === 'create' && <CreatedRoom socket={socket} roomId={roomId}/>
+                !roomJoined && roomCreated && createOrJoin === 'create' && <CreatedRoom socket={socket} roomId={roomId} users={users} waiting={false}/>
+            }
+            {
+                !roomJoined && createOrJoin === 'waiting' && <CreatedRoom socket={socket} roomId={roomId} users={users} waiting={true}/>
             }
             {
                 !roomJoined && createOrJoin === 'join' && <JoinRoom socket={socket} session={session} status={status}/>

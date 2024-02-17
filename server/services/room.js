@@ -17,7 +17,9 @@ export function joinRoom(roomsArray, data, socket, io) {
             });
 
             socket.join(room.roomId);
-            io.to(room.roomId).emit('room-joined', true);
+            socket.join(socket.id);
+            // io.to(room.roomId).emit('room-joined', true);
+            io.to(socket.id).emit('room-joined-waiting', true);
             io.to(room.roomId).emit('get-users', room.users);
             return true;
         }
