@@ -3,7 +3,7 @@ import UsersList from "@/components/room/informations/users-list";
 import Questions from "@/components/room/party/questions";
 import {useEffect, useState} from "react";
 
-export default function RoomParty({socket, users, roomInformations, questionInformations}) {
+export default function RoomParty({socket, users, roomInformations, questionInformations, timeLeft}) {
 
     const [answer, setAnswer] = useState(null);
     const [explication, setExplication] = useState('');
@@ -27,7 +27,7 @@ export default function RoomParty({socket, users, roomInformations, questionInfo
             {
                 roomInformations && !roomInformations.partyEnded && (
                     <>
-                        <Questions roomInformations={roomInformations} socket={socket} resetSubmittedAnswer={false}/>
+                        <Questions roomInformations={roomInformations} socket={socket} resetSubmittedAnswer={false} timeLeft={timeLeft}/>
                         {
                             answer !== undefined && answer ? <p>Bonne réponse !</p> : answer !== undefined && <p>Mauvaise réponse</p>
                         }

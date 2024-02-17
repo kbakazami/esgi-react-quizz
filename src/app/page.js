@@ -20,12 +20,15 @@ export default function Home() {
     const [questionInformations, setQuestionInformation] = useState({});
     const [roomQuestion, setRoomQuestion] = useState({});
     const [publicRooms, setPublicRooms] = useState([]);
+    const [socketId, setSocketId] = useState('');
+    const [questionTimeLeft, setQuestionTimeLeft] = useState(20);
 
     const {data: session, status} = useSession();
 
     useEffect(() => {
         socket.on('connect', () => {
             console.log('client connected - id', socket.id);
+            setSocketId(socket.id);
         });
 
         socket.on('room-joined', (value) => {
@@ -65,6 +68,10 @@ export default function Home() {
             setRoomQuestion(data);
         });
 
+        socket.on('question-time-left', (timeLeft) => {
+            setQuestionTimeLeft(timeLeft);
+        });
+
         socket.on('send-next-question', (data) => {
             //TODO : Make timer for question
             setTimeout(() => {
@@ -89,6 +96,7 @@ export default function Home() {
     return (
         <div>
             <h1>TP Quiz - React - Socket.io</h1>
+            <p>Socket - {socketId}</p>
             { !roomJoined && !roomCreated &&
                 (
                     <div className={"flex flex-col items-center justify-center mt-4"}>
@@ -123,7 +131,7 @@ export default function Home() {
                 !roomJoined && createOrJoin === 'join-public' && <JoinPublicRoom socket={socket} rooms={publicRooms} session={session} status={status}/>
             }
             {
-                roomJoined && <RoomParty socket={socket} users={users} roomInformations={roomInformations} questionInformations={questionInformations} roomQuestion={roomQuestion}/>
+                roomJoined && <RoomParty socket={socket} users={users} roomInformations={roomInformations} questionInformations={questionInformations} roomQuestion={roomQuestion} timeLeft={questionTimeLeft}/>
             }
         </div>
     )

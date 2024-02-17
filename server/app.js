@@ -24,6 +24,7 @@ let publicUsers = [];
 
 const DEFAULT_POINT_WIN = 1;
 const SPEED_POINT_WIN = 2;
+const TIMER_QUESTION = 20;
 
 const questions = [
     {
@@ -120,6 +121,10 @@ io.on('connection', (socket) => {
             }
             return false;
         });
+
+        setTimeout(() => {
+            startTimer(roomId);
+        }, 2000);
     });
 
     socket.on('join-created-room', (data) => {
@@ -129,48 +134,67 @@ io.on('connection', (socket) => {
 
     //Check if user's response is correct
     socket.on('send-response', (data) => {
-        data.room.questions.some(question => {
-            if(question.id === data.questions.id)
-            {
-                if(data.response === question.answer)
-                {
-                    io.to(data.room.roomId).emit('send-answer', {correct: true, explication: question.explication});
-                    console.log(data.user);
-                    console.log(data.room.users);
-                    data.room.users.forEach(user => {
-                        if (user.id === data.user)
-                        {
-                            user.score += DEFAULT_POINT_WIN;
-                        }
-                    });
-                    io.to(data.room.roomId).emit('get-users', data.room.users);
-                } else {
-                    io.to(data.room.roomId).emit('send-answer', {correct: false, explication: question.explication});
-                }
-                question.displayed = false;
+        console.log(data);
 
-                if( question.id < data.room.questionNumber)
-                {
-                    const nextQuestionId = question.id + 1;
+        // responses.push({
+        //     response: data.response,
+        //     user: data.user
+        // });
 
+        // console.log(responses);
 
-                    data.room.questions.some(q => {
-                        if(nextQuestionId === q.id) {
-                            q.displayed = true;
-                            return true;
-                        }
-                        return false;
-                    });
-                } else {
-                    data.room.partyEnded = true;
-                }
+        //WIP
+        if(data.questions && data.questions.answer === data.response)
+        {
+            io.to(data.user).emit('send-answer', {correct: true, explication: data.questions.explication});
+        } else {
+            console.log('mauvaise réponse');
+            // io.to(data.user).emit('send-answer', {correct: false, explication: data.questions.explication});
+        }
 
-                io.to(data.room.roomId).emit('send-next-question', data.room);
-
-                return true;
-            }
-            return false;
-        });
+        //see later
+        // data.room.questions.some(question => {
+        //     if(question.id === data.questions.id)
+        //     {
+        //         if(data.response === question.answer)
+        //         {
+        //             io.to(data.room.roomId).emit('send-answer', {correct: true, explication: question.explication});
+        //             console.log(data.user);
+        //             console.log(data.room.users);
+        //             data.room.users.forEach(user => {
+        //                 if (user.id === data.user)
+        //                 {
+        //                     user.score += DEFAULT_POINT_WIN;
+        //                 }
+        //             });
+        //             io.to(data.room.roomId).emit('get-users', data.room.users);
+        //         } else {
+        //             io.to(data.room.roomId).emit('send-answer', {correct: false, explication: question.explication});
+        //         }
+        //         question.displayed = false;
+        //
+        //         if( question.id < data.room.questionNumber)
+        //         {
+        //             const nextQuestionId = question.id + 1;
+        //
+        //
+        //             data.room.questions.some(q => {
+        //                 if(nextQuestionId === q.id) {
+        //                     q.displayed = true;
+        //                     return true;
+        //                 }
+        //                 return false;
+        //             });
+        //         } else {
+        //             data.room.partyEnded = true;
+        //         }
+        //
+        //         io.to(data.room.roomId).emit('send-next-question', data.room);
+        //
+        //         return true;
+        //     }
+        //     return false;
+        // });
     });
 
     //Remove users in room when disconnecting
@@ -185,6 +209,20 @@ io.on('connection', (socket) => {
     });
 });
 
+function startTimer(roomId) {
+    let timeLeft = TIMER_QUESTION;
+
+    const stepIntervalFn = () => {
+        io.to(roomId).emit('question-time-left', timeLeft);
+        if(timeLeft > 0) {
+            timeLeft--;
+        } else {
+            console.log('temps fini');
+        }
+        console.log('time-left', timeLeft);
+    };
+    setInterval(stepIntervalFn, 1000);
+}
 
 
 server.listen(3001, () => {
