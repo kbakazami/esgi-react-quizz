@@ -58,8 +58,12 @@ h2 {
         &:disabled {
             @apply border-gray-500 bg-gray-500 text-primary;
 
-            &:hover {
-                @apply bg-gray-500 text-primary;
+            &.correct-response {
+                @apply border-green-600 bg-green-600;
+            }
+
+            &.wrong-response {
+                @apply border-red-500 bg-red-500;
             }
         }
     }

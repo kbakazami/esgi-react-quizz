@@ -14,6 +14,7 @@ export function joinRoom(roomsArray, data, socket, io) {
                 id: socket.id,
                 username: data.username,
                 score: 0,
+                type: 'player'
             });
 
             socket.join(room.roomId);

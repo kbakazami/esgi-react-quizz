@@ -19,6 +19,7 @@ export default function Home() {
     const [roomInformations, setRoomInformations] = useState({});
     const [questionInformations, setQuestionInformation] = useState({});
     const [roomQuestion, setRoomQuestion] = useState({});
+    const [roomRoundId, setRoomRoundId] = useState('');
     const [publicRooms, setPublicRooms] = useState([]);
     const [socketId, setSocketId] = useState('');
     const [questionTimeLeft, setQuestionTimeLeft] = useState(20);
@@ -64,8 +65,8 @@ export default function Home() {
         });
 
         socket.on('get-room-question', (data) => {
-            console.log('get-room question data -- ', data);
-            setRoomQuestion(data);
+            setRoomQuestion(data.questions[0]);
+            setRoomRoundId(data.roundId);
         });
 
         socket.on('question-time-left', (timeLeft) => {
@@ -74,10 +75,19 @@ export default function Home() {
 
         socket.on('send-next-question', (data) => {
             //TODO : Make timer for question
-            setTimeout(() => {
-                setRoomInformations(data);
-            }, 7000);
 
+            console.log('next question sended');
+            // console.log('time left -- ', questionTimeLeft);
+            // if(questionTimeLeft === 0)
+            // {
+                // setTimeout(() => {
+                // console.log('get-room question data -- ', data);
+                // console.log('time left -- ', questionTimeLeft);
+                    setRoomQuestion(data.question);
+                    setRoomRoundId(data.roundId);
+                    setQuestionTimeLeft(20);
+                // }, 2000);
+            // }
         });
 
         socket.on('send-answer', (data) => {
@@ -131,7 +141,7 @@ export default function Home() {
                 !roomJoined && createOrJoin === 'join-public' && <JoinPublicRoom socket={socket} rooms={publicRooms} session={session} status={status}/>
             }
             {
-                roomJoined && <RoomParty socket={socket} users={users} roomInformations={roomInformations} questionInformations={questionInformations} roomQuestion={roomQuestion} timeLeft={questionTimeLeft}/>
+                roomJoined && <RoomParty socket={socket} users={users} roomInformations={roomInformations} questionInformations={questionInformations} roomQuestion={roomQuestion} roundId={roomRoundId} timeLeft={questionTimeLeft}/>
             }
         </div>
     )
