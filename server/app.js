@@ -175,7 +175,9 @@ io.on('connection', (socket) => {
 
         if(data.type === 'public')
         {
+            //push to publicRooms array to display it on the client side
             publicRooms.push(roomObject);
+            rooms.push(roomObject);
         } else {
             rooms.push(roomObject);
         }
