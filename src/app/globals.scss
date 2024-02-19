@@ -58,12 +58,18 @@ h2 {
         &:disabled {
             @apply border-gray-500 bg-gray-500 text-primary;
 
-            &.correct-response {
-                @apply border-green-600 bg-green-600;
+            &.selected {
+                @apply border-primary bg-primary text-white;
             }
 
-            &.wrong-response {
-                @apply border-red-500 bg-red-500;
+            &.add-color {
+                &.correct-response {
+                    @apply border-success bg-success text-white;
+                }
+
+                &.wrong-response {
+                    @apply border-error bg-error text-white;
+                }
             }
         }
     }

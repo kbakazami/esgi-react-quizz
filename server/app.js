@@ -140,13 +140,9 @@ io.on('connection', (socket) => {
 
     socket.on('check-username-exist', (data) => {
         const room = rooms.find(room => room.roomId === data.roomId);
-        console.log(room);
-
         if(room)
         {
             const username = room.users.find(user => user.username === data.username);
-            console.log(username);
-
             if(username)
             {
                 io.emit('username-already-taken', true);
@@ -266,6 +262,7 @@ io.on('connection', (socket) => {
                 io.to(actualRoom.roomId).emit('get-users', room.users);
             }
         }
+
         io.to(data.user).emit('send-answer', {correct: isAnswerCorrect, explication: actualQuestion.explication});
     });
 

@@ -1,16 +1,21 @@
 import {useEffect, useState} from "react";
 import UsersList from "@/components/room/informations/users-list";
 
-export default function CreatedRoom({roomId, socket, users, waiting}) {
+export default function CreatedRoom({socket, users, waiting}) {
 
     const [isPublicRoom, setIsPublicRoom] = useState(false);
+    const [roomId, setRoomId] = useState('');
 
     useEffect(() => {
-        if(roomId.toString().includes('public'))
-        {
-            setIsPublicRoom(true);
-        }
-    }, [roomId]);
+        socket.on('get-room-id', (data) => {
+            setRoomId(data);
+
+            if(data.toString().includes('public'))
+            {
+                setIsPublicRoom(true);
+            }
+        });
+    }, []);
 
     return (
         <div>

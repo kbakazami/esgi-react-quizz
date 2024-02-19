@@ -14,22 +14,14 @@ export default function Home() {
     const [createOrJoin, setCreateOrJoin] = useState('join-public');
     const [roomJoined, setRoomJoined] = useState(false);
     const [roomCreated, setRoomCreated] = useState(false);
-    const [roomId, setRoomId] = useState(false);
     const [users, setUsers] = useState([]);
-    const [roomInformations, setRoomInformations] = useState({});
-    const [questionInformations, setQuestionInformation] = useState({});
-    const [roomQuestion, setRoomQuestion] = useState({});
-    const [roomRoundId, setRoomRoundId] = useState('');
     const [publicRooms, setPublicRooms] = useState([]);
-    const [socketId, setSocketId] = useState('');
-    const [questionTimeLeft, setQuestionTimeLeft] = useState(20);
 
     const {data: session, status} = useSession();
 
     useEffect(() => {
         socket.on('connect', () => {
             console.log('client connected - id', socket.id);
-            setSocketId(socket.id);
         });
 
         socket.on('room-joined', (value) => {
@@ -47,39 +39,12 @@ export default function Home() {
             setRoomCreated(data);
         });
 
-        socket.on('get-room-id', (data) => {
-            setRoomId(data);
-        });
-
         socket.on('get-users', (data) => {
             setUsers(data);
         });
 
-        socket.on('get-room', (data) => {
-            setRoomInformations(data);
-        });
-
         socket.on('public-rooms', (data) => {
             setPublicRooms(data);
-        });
-
-        socket.on('get-room-question', (data) => {
-            setRoomQuestion(data.questions[0]);
-            setRoomRoundId(data.roundId);
-        });
-
-        socket.on('question-time-left', (timeLeft) => {
-            setQuestionTimeLeft(timeLeft);
-        });
-
-        socket.on('send-next-question', (data) => {
-            setRoomQuestion(data.question);
-            setRoomRoundId(data.roundId);
-            setQuestionTimeLeft(20);
-        });
-
-        socket.on('send-answer', (data) => {
-            setQuestionInformation(data);
         });
 
         socket.on('disconnect', () => {
@@ -94,7 +59,6 @@ export default function Home() {
     return (
         <div>
             <h1>TP Quiz - React - Socket.io</h1>
-            <p>Socket - {socketId}</p>
             { !roomJoined && !roomCreated && createOrJoin !== 'waiting' &&
                 (
                     <div className={"flex flex-col items-center justify-center mt-4"}>
@@ -117,10 +81,10 @@ export default function Home() {
                 !roomJoined && !roomCreated && createOrJoin === 'create' && <CreateRoom socket={socket} session={session} status={status}/>
             }
             {
-                !roomJoined && roomCreated && createOrJoin === 'create' && <CreatedRoom socket={socket} roomId={roomId} users={users} waiting={false}/>
+                !roomJoined && roomCreated && createOrJoin === 'create' && <CreatedRoom socket={socket} users={users} waiting={false}/>
             }
             {
-                !roomJoined && createOrJoin === 'waiting' && <CreatedRoom socket={socket} roomId={roomId} users={users} waiting={true}/>
+                !roomJoined && createOrJoin === 'waiting' && <CreatedRoom socket={socket} users={users} waiting={true}/>
             }
             {
                 !roomJoined && createOrJoin === 'join' && <JoinRoom socket={socket} session={session} status={status}/>
@@ -129,7 +93,7 @@ export default function Home() {
                 !roomJoined && createOrJoin === 'join-public' && <JoinPublicRoom socket={socket} rooms={publicRooms} session={session} status={status}/>
             }
             {
-                roomJoined && <RoomParty socket={socket} users={users} roomInformations={roomInformations} questionInformations={questionInformations} roomQuestion={roomQuestion} roundId={roomRoundId} timeLeft={questionTimeLeft}/>
+                roomJoined && <RoomParty socket={socket} users={users}/>
             }
         </div>
     )
