@@ -37,6 +37,8 @@ export default function CreatedRoom({roomId, socket, users, waiting}) {
                 </button>
             }
 
+            <button className={`btn primary flex mx-auto mt-8`} onClick={() => socket.emit('leave')}>Quitter la partie</button>
+
         </div>
     )
 }

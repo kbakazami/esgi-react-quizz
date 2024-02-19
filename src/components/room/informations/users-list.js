@@ -8,11 +8,11 @@ const usersList = ({users, partyEnded, waiting, socket}) => {
         {
             setExpandUserList(true);
         }
-    }, [partyEnded]);
+    }, [partyEnded, waiting]);
 
     return (
         <div className={`border border-primary rounded-md bg-secondary select-none ${partyEnded || waiting ? 'w-1/2 mx-auto' : 'w-fit cursor-pointer'}`} onClick={() => {
-            if(!partyEnded || waiting) {
+            if(!partyEnded && !waiting) {
                 setExpandUserList(!expandUserList);
             }}}>
             <div className={"flex flex-row gap-x-4 items-center ease-in-out duration-300 hover:bg-primary hover:text-white px-5 pt-3 pb-4"}>

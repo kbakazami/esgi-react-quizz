@@ -73,21 +73,9 @@ export default function Home() {
         });
 
         socket.on('send-next-question', (data) => {
-            //TODO : Make timer for question
-
-            console.log('next question sended');
-            console.log(data.question);
-            // console.log('time left -- ', questionTimeLeft);
-            // if(questionTimeLeft === 0)
-            // {
-                // setTimeout(() => {
-                // console.log('get-room question data -- ', data);
-                // console.log('time left -- ', questionTimeLeft);
-                    setRoomQuestion(data.question);
-                    setRoomRoundId(data.roundId);
-                    setQuestionTimeLeft(20);
-                // }, 2000);
-            // }
+            setRoomQuestion(data.question);
+            setRoomRoundId(data.roundId);
+            setQuestionTimeLeft(20);
         });
 
         socket.on('send-answer', (data) => {
@@ -107,7 +95,7 @@ export default function Home() {
         <div>
             <h1>TP Quiz - React - Socket.io</h1>
             <p>Socket - {socketId}</p>
-            { !roomJoined && !roomCreated &&
+            { !roomJoined && !roomCreated && createOrJoin !== 'waiting' &&
                 (
                     <div className={"flex flex-col items-center justify-center mt-4"}>
                         <div className={"flex flex-row items-center justify-center gap-x-24"}>

@@ -8,7 +8,6 @@ export default function RoomParty({socket, users, roomInformations, questionInfo
 
     const [answer, setAnswer] = useState(null);
     const [explication, setExplication] = useState('');
-    const [host, setHost] = useState(false);
 
     useEffect(() => {
         if(questionInformations)
@@ -23,13 +22,10 @@ export default function RoomParty({socket, users, roomInformations, questionInfo
         setExplication(undefined);
     }, [roomQuestion]);
 
-    console.log(roomQuestion);
-
     return (
         <div>
-            Room party
-            <p>Round numéro : {roundId}</p>
-            <p>Question numéro : {roomQuestion.id}</p>
+            <p>Round n°{roundId} / {roomInformations.roundNumber}</p>
+            <p>Question n°{roomQuestion.id} / {roomInformations.questionNumber}</p>
             <div className={`flex ${roomInformations.partyEnded ? 'flex-col gap-y-10 justify-center items-center' : 'flex-row justify-between items-start'}`}>
                 {roomInformations && roomInformations.partyEnded && <h2>La partie est finie !</h2>}
                 <UsersList users={users} partyEnded={roomInformations.partyEnded} socket={socket}/>

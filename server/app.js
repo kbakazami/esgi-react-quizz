@@ -138,6 +138,24 @@ io.on('connection', (socket) => {
 
     io.emit('public-rooms', publicRooms);
 
+    socket.on('check-username-exist', (data) => {
+        const room = rooms.find(room => room.roomId === data.roomId);
+        console.log(room);
+
+        if(room)
+        {
+            const username = room.users.find(user => user.username === data.username);
+            console.log(username);
+
+            if(username)
+            {
+                io.emit('username-already-taken', true);
+            } else {
+                io.emit('username-already-taken', false);
+            }
+        }
+    });
+
     socket.on('join-room', (data) => {
         joinRoom(rooms, data, socket, io);
     });

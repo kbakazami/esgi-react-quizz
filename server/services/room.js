@@ -9,20 +9,29 @@ export function joinRoom(roomsArray, data, socket, io) {
     //If the submitted id for the room exist then add the user and let him join the channel & send event
     //Else send error
     const room = roomsArray.find(room => room.roomId === data.roomId);
+
     if(room)
     {
-        room.users.push({
-            id: socket.id,
-            username: data.username,
-            score: 0,
-            type: 'player'
-        });
+        const user = room.users.find(user => user.id === socket.id);
 
-        socket.join(room.roomId);
-        socket.join(socket.id);
+        if(user === undefined)
+        {
+            room.users.push({
+                id: socket.id,
+                username: data.username,
+                score: 0,
+                type: 'player'
+            });
 
-        io.to(socket.id).emit('room-joined-waiting', true);
-        io.to(room.roomId).emit('get-users', room.users);
+            socket.join(room.roomId);
+            socket.join(socket.id);
+
+            io.to(socket.id).emit('room-joined-waiting', true);
+            io.to(room.roomId).emit('get-users', room.users);
+
+        } else {
+            io.emit('join-room-error', {message: 'Vous ne pouvez pas rejoindre une salle que vous avez créé !'});
+        }
     } else {
         io.emit('join-room-error', {message: 'Le code est invalide ou la salle n\'existe pas, veuillez réessayer'});
     }
@@ -34,5 +43,4 @@ export function sendNextQuestion(io, roomId, nextQuestion, roundId, startTimer) 
     setTimeout(() => {
         startTimer(roomId);
     }, 2000);
-
 }
