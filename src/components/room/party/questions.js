@@ -8,6 +8,8 @@ export default function Questions({socket, roomInformations, resetSubmittedAnswe
     const [divStyle, setDivStyle] = useState({});
     const [timerText, setTimerText] = useState('');
 
+    console.log(roomQuestion);
+
     const submitAnswer = (value) => {
         socket.emit('send-response', {question: roomQuestion, response: value, room: roomInformations, user: socket.id, roundId: roundId});
         setIsAnswerSubmitted(true);
@@ -50,8 +52,6 @@ export default function Questions({socket, roomInformations, resetSubmittedAnswe
             setIsAnswerSubmitted(false);
         }
     }, [roomQuestion]);
-
-    console.log(roomQuestion);
 
     return (
         <div>

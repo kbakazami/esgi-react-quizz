@@ -3,7 +3,7 @@ import { createServer } from 'node:http';
 import cors from 'cors';
 import { Server } from 'socket.io';
 import { nanoid } from 'nanoid'
-import {filterUsersInRoom, joinRoom} from "./services/room.js";
+import {filterUsersInRoom, joinRoom, sendNextQuestion} from "./services/room.js";
 import OpenAI from "openai";
 
 const app = express();
@@ -21,9 +21,9 @@ app.use(cors({
 let rooms = [];
 const publicRooms = [];
 
-const DEFAULT_POINT_WIN = 1000;
+const DEFAULT_POINT_WIN = 2000;
 const DEFAULT_TIMER_QUESTION = 20;
-let timer = 5;
+let timer = 20;
 
 const questions = [
     {
@@ -51,8 +51,6 @@ const questions = [
         displayed: false,
     },
 ]
-
-
 
 
 const toto = [
@@ -87,24 +85,50 @@ const toto = [
         questions: [
             {
                 id: 1,
-                question: 'Qui est toto',
-                answerPropositions: ['Toto', 'Tata', 'Lolo', 'Lala'],
-                answer: 'Toto',
-                explication: 'Toto',
+                question: 'abc',
+                answerPropositions: ['abc', 'def', 'ghi', 'jkl'],
+                answer: 'abc',
+                explication: 'abc',
             },
             {
                 id: 2,
-                question: 'Qui est tata',
-                answerPropositions: ['Toto', 'Tata', 'Lolo', 'Lala'],
-                answer: 'Tata',
-                explication: 'Tata',
+                question: 'def',
+                answerPropositions: ['abc', 'def', 'ghi', 'jkl'],
+                answer: 'def',
+                explication: 'def',
             },
             {
                 id: 3,
-                question: 'Qui est lolo',
-                answerPropositions: ['Toto', 'Tata', 'Lolo', 'Lala'],
-                answer: 'Lolo',
-                explication: 'Lolo',
+                question: 'ghi',
+                answerPropositions: ['abc', 'def', 'ghi', 'jkl'],
+                answer: 'ghi',
+                explication: 'ghi',
+            },
+        ]
+    },
+    {
+        roundId: 3,
+        questions: [
+            {
+                id: 1,
+                question: 'mno',
+                answerPropositions: ['mno', 'pqr', 'stu', 'vwx'],
+                answer: 'mno',
+                explication: 'mno',
+            },
+            {
+                id: 2,
+                question: 'pqr',
+                answerPropositions: ['mno', 'pqr', 'stu', 'vwx'],
+                answer: 'pqr',
+                explication: 'pqr',
+            },
+            {
+                id: 3,
+                question: 'stu',
+                answerPropositions: ['mno', 'pqr', 'stu', 'vwx'],
+                answer: 'stu',
+                explication: 'stu',
             },
         ]
     }
@@ -165,56 +189,35 @@ io.on('connection', (socket) => {
         io.emit('public-rooms', publicRooms);
     });
 
+    //Connect the host to the party and begin the party by sending the first question
     socket.on('begin-party', (roomId) => {
+
+        const room = rooms.find(room => room.roomId === roomId);
+
         socket.join(roomId);
         io.to(roomId).emit('room-joined', true);
-
-        rooms.some(room => {
-            if(roomId === room.roomId)
-            {
-                io.to(roomId).emit('get-room', room);
-                io.to(roomId).emit('get-room-question', room.questions[0]);
-                return true;
-            }
-            return false;
-        });
+        io.to(roomId).emit('get-room', room);
+        io.to(roomId).emit('get-room-question', room.questions[0]);
 
         setTimeout(() => {
             startTimer(roomId);
         }, 2000);
     });
 
-    socket.on('join-created-room', (data) => {
-        socket.join(data);
-        io.to(data).emit('room-joined', true);
-    });
-
     //Check if user's response is correct
     socket.on('send-response', (data) => {
 
         const actualRoom = data.room;
-        const actualRound = data.roundId;
         const actualQuestion = data.question;
         let isAnswerCorrect = false;
 
-        actualRoom.questions.some(round => {
-            if(round.roundId === actualRound)
-            {
-                round.questions.some(question => {
-                    if(question.id === actualQuestion.id)
-                    {
-                        if(data.response === question.answer)
-                        {
-                            isAnswerCorrect = true;
-                            return true;
-                        }
-                    }
-                    return false;
-                });
-                return true;
-            }
-            return false;
-        });
+        const round = actualRoom.questions.find(round => round.roundId === data.roundId);
+        const question = round.questions.find(question => question.id === actualQuestion.id);
+
+        if(round && question && data.response === question.answer)
+        {
+            isAnswerCorrect = true;
+        }
 
         //In how much second the user responded
         const responseInSec = (DEFAULT_TIMER_QUESTION - timer);
@@ -223,91 +226,55 @@ io.on('connection', (socket) => {
         let score = DEFAULT_POINT_WIN;
 
         //Else count the points he will get
-        if(responseInSec > 0.5)
+        if(responseInSec > 1)
         {
             const secDividedByTimer = responseInSec / DEFAULT_TIMER_QUESTION
-
             const responseInSecDividedBy2 = secDividedByTimer / 2;
-
             const susbtractOne = 1 - responseInSecDividedBy2;
-
             const multiply = susbtractOne * DEFAULT_POINT_WIN;
-
             score = Math.ceil(multiply);
         }
 
         if(isAnswerCorrect)
         {
-            rooms.some(room => {
-                if(room.roomId === actualRoom.roomId)
-                {
-                    room.users.some(user => {
-                        if(user.id === data.user)
-                        {
-                            user.score += score;
-                            io.to(actualRoom.roomId).emit('get-users', room.users);
-                        }
-                    })
-                }
-            })
+            const room = rooms.find(room => room.roomId === actualRoom.roomId);
+            const user = room.users.find(user => user.id === data.user);
+
+            if(room && user)
+            {
+                user.score += score;
+                io.to(actualRoom.roomId).emit('get-users', room.users);
+            }
         }
         io.to(data.user).emit('send-answer', {correct: isAnswerCorrect, explication: actualQuestion.explication});
     });
 
     socket.on('get-next-question', (data) => {
+
         const actualRoom = data.room;
-        const actualQuestionId = data.actualQuestionId;
-        const nextQuestionId = actualQuestionId + 1;
+        const nextQuestionId = data.actualQuestionId + 1;
         const actualRoundId = data.actualRoundId;
-        const nextRoundId = actualRoundId + 1;
-        console.log('actualRound', actualRoundId);
 
-        actualRoom.questions.some(round => {
-            if(actualRoundId <= actualRoom.roundNumber)
+        if(actualRoundId <= actualRoom.roundNumber)
+        {
+            if(nextQuestionId <= actualRoom.questionNumber)
             {
-                if(round.roundId === actualRoundId)
-                {
-                    round.questions.some(question => {
-                        //If the id of displayed question is under the number of question choosen at the beggining search for the next question
-                        if(actualQuestionId < actualRoom.questionNumber)
-                        {
-                            //If the next id of the question wanted match a question in the room with the same id is sended to the client
-                            //Else it means  the party is over
-                            if(nextQuestionId === question.id)
-                            {
-                                io.to(actualRoom.roomId).emit('send-next-question', {question: question, roundId: round.roundId});
-                                io.to(actualRoom.roomId).emit('reset-explication');
-                                setTimeout(() => {
-                                    startTimer(actualRoom.roomId);
-                                }, 2000);
-                                return true;
-                            }
-                        }  else {
-                            //WIP
-                            // actualRoom.questions.some(round => {
-                            //     if(round.roundId === nextRoundId)
-                            //     {
-                            //         io.to(actualRoom.roomId).emit('send-next-question', {question: round.questions[0], roundId: round.roundId});
-                            //         io.to(actualRoom.roomId).emit('reset-explication');
-                            //         setTimeout(() => {
-                            //             startTimer(actualRoom.roomId);
-                            //         }, 2000);
-                            //         return true;
-                            //     }
-                            //     return false;
-                            // });
-                            return false;
-                        }
-                    });
-                }
+                const actualRound = actualRoom.questions.find(room => room.roundId === actualRoundId);
+                const nextQuestion = actualRound.questions.find(question => question.id === nextQuestionId);
+
+                sendNextQuestion(io, actualRoom.roomId, nextQuestion, actualRound.roundId, startTimer);
             } else {
-                actualRoom.partyEnded = true;
-                io.to(actualRoom.roomId).emit('get-room', actualRoom);
-                return false;
+                const nextRound = actualRoom.questions.find(room => room.roundId === (actualRoundId + 1));
+
+                if(nextRound === undefined)
+                {
+                    actualRoom.partyEnded = true;
+                    io.to(actualRoom.roomId).emit('get-room', actualRoom);
+                } else {
+                    sendNextQuestion(io, actualRoom.roomId, nextRound.questions[0], nextRound.roundId, startTimer);
+                }
             }
-        });
-
-
+        }
     });
 
     //Remove users in room when disconnecting
@@ -323,8 +290,6 @@ io.on('connection', (socket) => {
 });
 
 function startTimer(roomId) {
-    // let timeLeft = timer;
-
     const questionInterval = setInterval(() => {
         timer--;
         io.to(roomId).emit('question-time-left', timer);
@@ -332,7 +297,7 @@ function startTimer(roomId) {
         if(timer === 0)
         {
             clearInterval(questionInterval);
-            timer = 5;
+            timer = 20;
         }
     }, 1000);
 }

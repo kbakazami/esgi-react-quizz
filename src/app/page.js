@@ -56,7 +56,6 @@ export default function Home() {
         });
 
         socket.on('get-room', (data) => {
-            console.log('get-room data -- ', data);
             setRoomInformations(data);
         });
 
@@ -77,6 +76,7 @@ export default function Home() {
             //TODO : Make timer for question
 
             console.log('next question sended');
+            console.log(data.question);
             // console.log('time left -- ', questionTimeLeft);
             // if(questionTimeLeft === 0)
             // {

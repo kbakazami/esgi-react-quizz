@@ -6,24 +6,33 @@ export function filterUsersInRoom(rooms, socket, io){
 }
 
 export function joinRoom(roomsArray, data, socket, io) {
-    //If the submitted id is the same id of the first room found then add the user and let him join the channel & send event
-    roomsArray.some(room => {
-        if(data.roomId === room.roomId)
-        {
-            room.users.push({
-                id: socket.id,
-                username: data.username,
-                score: 0,
-                type: 'player'
-            });
+    //If the submitted id for the room exist then add the user and let him join the channel & send event
+    //Else send error
+    const room = roomsArray.find(room => room.roomId === data.roomId);
+    if(room)
+    {
+        room.users.push({
+            id: socket.id,
+            username: data.username,
+            score: 0,
+            type: 'player'
+        });
 
-            socket.join(room.roomId);
-            socket.join(socket.id);
-            // io.to(room.roomId).emit('room-joined', true);
-            io.to(socket.id).emit('room-joined-waiting', true);
-            io.to(room.roomId).emit('get-users', room.users);
-            return true;
-        }
-        return false;
-    });
+        socket.join(room.roomId);
+        socket.join(socket.id);
+
+        io.to(socket.id).emit('room-joined-waiting', true);
+        io.to(room.roomId).emit('get-users', room.users);
+    } else {
+        io.emit('join-room-error', {message: 'Le code est invalide ou la salle n\'existe pas, veuillez réessayer'});
+    }
+}
+
+export function sendNextQuestion(io, roomId, nextQuestion, roundId, startTimer) {
+    io.to(roomId).emit('send-next-question', {question: nextQuestion, roundId: roundId});
+    io.to(roomId).emit('reset-explication');
+    setTimeout(() => {
+        startTimer(roomId);
+    }, 2000);
+
 }
