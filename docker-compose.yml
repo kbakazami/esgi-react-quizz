@@ -1,10 +1,9 @@
 version: '3.7'
 
 services:
-  app:
+  app-quizz-challenge:
     image: node:20-alpine
-    command: sh -c "npm install && npm run dev"
-    restart: always
+    command: sh -c "npm install && npx prisma generate && npm run dev"
     container_name: node
     working_dir: /app
     ports:
@@ -13,9 +12,23 @@ services:
       - ./:/app
       - /app/node_modules
     depends_on:
-      - mysql
+      - mysql-quizz-challenge
 
-  mysql:
+  server-quizz-challenge:
+    image: node:20-alpine
+    command: sh -c "cd server && npm install && npm run start"
+    restart: always
+    container_name: express
+    working_dir: /app
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    depends_on:
+      - mysql-quizz-challenge
+
+  mysql-quizz-challenge:
     image: mysql:latest
     container_name: mysql
     environment:
