@@ -1,0 +1,44 @@
+version: '3.7'
+
+services:
+  app-quizz-challenge:
+    image: node:20-alpine
+    command: sh -c "npm install && npx prisma generate && npx prisma migrate dev && npm run dev"
+    container_name: node
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    depends_on:
+      - mysql-quizz-challenge
+
+  server-quizz-challenge:
+    image: node:20-alpine
+    command: sh -c "cd server && npm install && npm run start"
+    restart: always
+    container_name: express
+    working_dir: /app
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    depends_on:
+      - mysql-quizz-challenge
+
+  mysql-quizz-challenge:
+    image: mysql:latest
+    container_name: mysql
+    environment:
+      MYSQL_DATABASE: quizz
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - db:/var/lib/mysql
+
+volumes:
+  db:
