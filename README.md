@@ -27,4 +27,4 @@ Il faut executer la commande suivante :
 
 La page d'accueil du projet devrait ressembler à ceci, il se peut qu'elle n'aie pas chargée entièrement après avoir lancé docker-compose up -d, il faudra donc recharger la page
 
-![plot](C:/Users/bacdi/Downloads/Projets VSCode/Cours M2 ESGI/Intégration d'IA via API/readme react.png)
+![plot](src/images/quiz.png)
