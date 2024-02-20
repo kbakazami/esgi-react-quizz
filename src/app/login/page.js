@@ -39,7 +39,7 @@ export default function Login() {
     }
 
     return(
-        <div className="min-h-screen flex items-center justify-center ">
+        <div className="flex items-center justify-center grow">
             <div className="bg-white p-8 rounded shadow-md max-w-md w-full mx-auto">
                 <h2 className="text-2xl font-semibold mb-4">Connexion</h2>
 

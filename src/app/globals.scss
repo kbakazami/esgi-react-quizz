@@ -34,6 +34,10 @@ h1 {
     @apply text-3xl font-bold text-center mt-10;
 }
 
+h2 {
+    @apply text-xl;
+}
+
 .link {
     @apply relative;
 
@@ -50,10 +54,28 @@ h1 {
         &:hover {
             @apply bg-primary text-white;
         }
+
+        &:disabled {
+            @apply border-gray-500 bg-gray-500 text-primary;
+
+            &.selected {
+                @apply border-primary bg-primary text-white;
+            }
+
+            &.add-color {
+                &.correct-response {
+                    @apply border-success bg-success text-white;
+                }
+
+                &.wrong-response {
+                    @apply border-error bg-error text-white;
+                }
+            }
+        }
     }
 }
 
-.difficulty, .room-type, .category {
+.difficulty, .room-type, .category, .room {
     li {
         @apply relative border border-primary rounded-md p-4 min-w-24 min-h-12 bg-secondary ease-in-out duration-300 flex;
 
@@ -62,7 +84,7 @@ h1 {
         }
 
         &.category {
-            @apply min-w-40;
+            @apply min-w-52;
         }
     }
 
@@ -82,4 +104,8 @@ h1 {
 
 input[type="number"], input[type='text'], input[type='email'], input[type='password'] {
     @apply bg-transparent border-b border-primary placeholder:italic placeholder-primary ring-0 outline-0;
+}
+
+.error-form {
+    @apply italic text-primary mt-2;
 }

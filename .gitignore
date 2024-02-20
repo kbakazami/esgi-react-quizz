@@ -26,7 +26,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env*.local
+server/.env
 
 # vercel
 .vercel
@@ -40,3 +40,6 @@ next-env.d.ts
 
 #volume
 esgi_react_quizz/*
+
+#server
+server/node_modules

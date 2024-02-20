@@ -28,10 +28,19 @@ module.exports = {
         secondary: {
           "DEFAULT": '#AF9BB6',
         },
+        error: {
+          "DEFAULT": '#9F2424'
+        },
+        success: {
+          "DEFAULT": '#28793F'
+        }
       },
       fontFamily: {
         'poppins':['"Poppins"']
       },
+      backgroundSize: {
+        'full': '100%'
+      }
     },
   },
   plugins: [],
