@@ -2,7 +2,6 @@
 import { useForm } from "react-hook-form"
 import ErrorMessage from "@/components/error-message";
 import {useEffect, useState} from "react";
-import {data} from "autoprefixer";
 
 export default function JoinRoom({socket, session, status}) {
 

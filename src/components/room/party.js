@@ -34,14 +34,22 @@ export default function RoomParty({socket, users}) {
     return (
         <div>
             <div className={`flex ${room.partyEnded ? 'flex-col gap-y-10 justify-center items-center' : 'flex-row justify-between items-start'}`}>
-                {room && room.partyEnded && <h2>La partie est finie !</h2>}
+                {room && room.partyEnded && <h2 className={"mt-4"}>La partie est finie !</h2>}
                 <UsersList users={users} partyEnded={room.partyEnded} socket={socket}/>
                 <button className={`btn primary`} onClick={() => socket.emit('leave')}>Quitter la partie</button>
             </div>
-            <div className={"flex flex-row gap-x-10 mt-4"}>
-                <p>Round n°{round} / {room.roundNumber}</p>
-                <p>Question n°{question.id} / {room.questionNumber}</p>
-            </div>
+
+            {
+                room && !room.partyEnded && (
+                    <div className={"flex flex-row gap-x-10 mt-4"}>
+                        <p>Code de la salle : {room.roomId}</p>
+                        <p>Sujet des questions : {room.category}</p>
+                        <p>Round n°{round} / {room.roundNumber}</p>
+                        <p>Question n°{question.id} / {room.questionNumber}</p>
+                    </div>
+                )
+            }
+
             {
                 room && !room.partyEnded && (
                     <>

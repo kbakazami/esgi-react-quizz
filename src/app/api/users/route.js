@@ -4,7 +4,6 @@ import {hashPassword} from "@/utils/password";
 
 export async function POST(req) {
     const data = await req.json();
-    console.log(data)
     const userCount = await prisma.user.count({
         where: {
             email: data.email

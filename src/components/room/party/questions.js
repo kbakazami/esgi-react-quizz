@@ -45,6 +45,11 @@ export default function Questions({socket, room, timeLeft, question, round}) {
             setIsDisabledColor('add-color');
             setIsWaitingAnswer(false);
         }
+
+        if(timeLeft === 20)
+        {
+            setDisabled(true);
+        }
     }, [timeLeft]);
 
     useEffect(() => {
@@ -79,7 +84,8 @@ export default function Questions({socket, room, timeLeft, question, round}) {
     return (
         <div>
             <div>
-                <h2 className={"text-5xl font-bold text-center mt-4 mb-20"}>{question.question}</h2>
+                <h2 className={"text-5xl font-bold text-center mt-4"}>{question.question}</h2>
+                <p className={"text-center mb-20 mt-8 text-xl"}>Indice : {question.tip}</p>
                 {
                     !isWaitingAnswer && answer !== undefined && explication !== undefined && (
                         <div className={"flex flex-col gap-y-4 justify-center text-center my-24"}>
@@ -95,21 +101,25 @@ export default function Questions({socket, room, timeLeft, question, round}) {
                         <p className={"text-2xl text-center my-24"}>En attente de la réponse de tout le monde...</p>
                     )
                 }
-                <div className={"grid grid-cols-2 gap-8"}>
-                    {
-                        Object.keys(question).length > 0 && question.answerPropositions.map((propositions, index) => {
-                            return (
-                                <button key={index}
-                                        className={`btn primary ${disabledColor} ${propositions === question.answer ? 'correct-response' : 'wrong-response'} ${propositions === responseChoosen ? 'selected' : ''}`}
-                                        onClick={(e) => submitAnswer(e.target.value)}
-                                        value={propositions}
-                                        disabled={disabled}>
-                                    {propositions}
-                                </button>
-                            )
-                        })
-                    }
-                </div>
+                {
+                    timeLeft !== 20 && (
+                        <div className={"grid grid-cols-2 gap-8"}>
+                            {
+                                Object.keys(question).length > 0 && question.answerPropositions.map((propositions, index) => {
+                                    return (
+                                        <button key={index}
+                                                className={`btn primary ${disabledColor} ${propositions === question.answer ? 'correct-response' : 'wrong-response'} ${propositions === responseChoosen ? 'selected' : ''}`}
+                                                onClick={(e) => submitAnswer(e.target.value)}
+                                                value={propositions}
+                                                disabled={disabled}>
+                                            {propositions}
+                                        </button>
+                                    )
+                                })
+                            }
+                        </div>
+                    )
+                }
             </div>
             <div className={"flex flex-col gap-y-4 mt-10"}>
                 <p className={"text-xl font-bold text-center"}>{timerText}</p>

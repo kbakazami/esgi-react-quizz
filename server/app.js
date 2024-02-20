@@ -4,7 +4,7 @@ import cors from 'cors';
 import { Server } from 'socket.io';
 import { nanoid } from 'nanoid'
 import {filterUsersInRoom, joinRoom, sendNextQuestion} from "./services/room.js";
-import OpenAI from "openai";
+import {createQuestions} from "./services/openai.js";
 
 const app = express();
 const server = createServer(app);
@@ -24,115 +24,6 @@ const publicRooms = [];
 const DEFAULT_POINT_WIN = 2000;
 const DEFAULT_TIMER_QUESTION = 20;
 let timer = 20;
-
-const questions = [
-    {
-        id: 1,
-        question: 'Quel est le fleuve qui traverse Paris ?',
-        answerPropositions: ['La Seine', 'Le Rhône', 'La Loire', 'Le Danube'],
-        answer: 'La Seine',
-        explication: 'La Seine est le fleuve emblématique qui traverse la ville de Paris, contribuant grandement à sa beauté et à son charme.',
-        displayed: true,
-    },
-    {
-        id: 2,
-        question: 'Quelle est la capitale de la France ?',
-        answerPropositions: ['Londres', 'Rome', 'Berlin', 'Paris'],
-        answer: 'Paris',
-        explication: 'Paris est la capitale de la France, célèbre pour ses monuments emblématiques, sa culture riche et son histoire fascinante.',
-        displayed: false,
-    },
-    {
-        id: 3,
-        question: 'Où se trouve la célèbre tour Eiffel ?',
-        answerPropositions: ['Londres', 'Rome', 'Berlin', 'Paris'],
-        answer: 'Paris',
-        explication: 'La tour Eiffel est située à Paris, en France, et est l\'un des symboles les plus reconnaissables du pays.',
-        displayed: false,
-    },
-]
-
-
-const toto = [
-    {
-        roundId: 1,
-        questions: [
-            {
-                id: 1,
-                question: 'Quel est le fleuve qui traverse Paris ?',
-                answerPropositions: ['La Seine', 'Le Rhône', 'La Loire', 'Le Danube'],
-                answer: 'La Seine',
-                explication: 'La Seine est le fleuve emblématique qui traverse la ville de Paris, contribuant grandement à sa beauté et à son charme.',
-            },
-            {
-                id: 2,
-                question: 'Quelle est la capitale de la France ?',
-                answerPropositions: ['Londres', 'Rome', 'Berlin', 'Paris'],
-                answer: 'Paris',
-                explication: 'Paris est la capitale de la France, célèbre pour ses monuments emblématiques, sa culture riche et son histoire fascinante.',
-            },
-            {
-                id: 3,
-                question: 'Où se trouve la célèbre tour Eiffel ?',
-                answerPropositions: ['Londres', 'Rome', 'Berlin', 'Paris'],
-                answer: 'Paris',
-                explication: 'La tour Eiffel est située à Paris, en France, et est l\'un des symboles les plus reconnaissables du pays.',
-            },
-        ]
-    },
-    {
-        roundId: 2,
-        questions: [
-            {
-                id: 1,
-                question: 'abc',
-                answerPropositions: ['abc', 'def', 'ghi', 'jkl'],
-                answer: 'abc',
-                explication: 'abc',
-            },
-            {
-                id: 2,
-                question: 'def',
-                answerPropositions: ['abc', 'def', 'ghi', 'jkl'],
-                answer: 'def',
-                explication: 'def',
-            },
-            {
-                id: 3,
-                question: 'ghi',
-                answerPropositions: ['abc', 'def', 'ghi', 'jkl'],
-                answer: 'ghi',
-                explication: 'ghi',
-            },
-        ]
-    },
-    {
-        roundId: 3,
-        questions: [
-            {
-                id: 1,
-                question: 'mno',
-                answerPropositions: ['mno', 'pqr', 'stu', 'vwx'],
-                answer: 'mno',
-                explication: 'mno',
-            },
-            {
-                id: 2,
-                question: 'pqr',
-                answerPropositions: ['mno', 'pqr', 'stu', 'vwx'],
-                answer: 'pqr',
-                explication: 'pqr',
-            },
-            {
-                id: 3,
-                question: 'stu',
-                answerPropositions: ['mno', 'pqr', 'stu', 'vwx'],
-                answer: 'stu',
-                explication: 'stu',
-            },
-        ]
-    }
-]
 
 io.on('connection', (socket) => {
 
@@ -160,12 +51,11 @@ io.on('connection', (socket) => {
         joinRoom(publicRooms, data, socket, io);
     });
 
-    socket.on('create-room', (data) => {
+    socket.on('create-room', async (data) => {
 
         let roomId = nanoid(4);
 
-        if(data.type === 'public')
-        {
+        if (data.type === 'public') {
             roomId = 'public-' + nanoid(4);
         }
 
@@ -184,11 +74,17 @@ io.on('connection', (socket) => {
                 score: 0,
                 type: 'host',
             }],
-            questions: toto,
+            questions: []
         }
 
-        if(data.type === 'public')
-        {
+        const questions = await createQuestions(roomObject);
+
+        //Parse the response because openAI put the json object into a json string + remove all \n or it'll fail
+        const parsedQuestions = JSON.parse(questions.replaceAll('\n', '').trim());
+
+        roomObject.questions = parsedQuestions.rounds;
+
+        if (data.type === 'public') {
             //push to publicRooms array to display it on the client side
             publicRooms.push(roomObject);
             rooms.push(roomObject);
