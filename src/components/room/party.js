@@ -48,7 +48,6 @@ export default function RoomParty({socket, users}) {
 
     return (
         <div>
-            <p>Sujet des questions : {room.category}</p>
             {
                 isUserWaiting && <div className={"flex flex-col items-center justify-center gap-x-4 mt-20"}>
                     <h1 className={"italic"}>En attente de la fin de la question</h1>
