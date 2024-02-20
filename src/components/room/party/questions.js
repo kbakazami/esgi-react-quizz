@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from "react";
 
-export default function Questions({socket, room, timeLeft, question, round}) {
+export default function Questions({socket, room, timeLeft, question, round, isUserWaiting}) {
 
     const [disabledColor, setIsDisabledColor] = useState('');
     const [disabled, setDisabled] = useState(false);
@@ -53,6 +53,14 @@ export default function Questions({socket, room, timeLeft, question, round}) {
     }, [timeLeft]);
 
     useEffect(() => {
+        if(isUserWaiting)
+        {
+            submitAnswer(null);
+        }
+        console.log(room);
+    }, [isUserWaiting]);
+
+    useEffect(() => {
         setDivStyle({
             width: '100%',
         });
@@ -69,7 +77,6 @@ export default function Questions({socket, room, timeLeft, question, round}) {
     }, [question]);
 
     useEffect(() => {
-
         socket.on('send-answer', (data) => {
             setAnswer(data.correct);
             setExplication(data.explication);

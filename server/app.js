@@ -74,7 +74,8 @@ io.on('connection', (socket) => {
                 score: 0,
                 type: 'host',
             }],
-            questions: []
+            questions: [],
+            isPlaying: false,
         }
 
         const questions = await createQuestions(roomObject);
@@ -105,6 +106,8 @@ io.on('connection', (socket) => {
     socket.on('begin-party', (roomId) => {
 
         const room = rooms.find(room => room.roomId === roomId);
+
+        room.isPlaying = true;
 
         socket.join(roomId);
         io.to(roomId).emit('room-joined', true);
@@ -167,6 +170,8 @@ io.on('connection', (socket) => {
         const actualRoom = data.room;
         const nextQuestionId = data.actualQuestionId + 1;
         const actualRoundId = data.actualRoundId;
+
+        io.to(actualRoom.roomId).emit('user-waiting', {value: false, room: actualRoom});
 
         if(actualRoundId <= actualRoom.roundNumber)
         {
