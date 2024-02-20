@@ -24,3 +24,7 @@ Il faut executer la commande suivante :
 * Wyvin : Mise en place du Docker, de Prisma et du système d'authentification
 
 * Diaby : Soutien sur les différentes taches en pair programming et dans la conception : gestion des parties (comment génerer un code pour une salle privée ? Comment differencier une partie publique d'une partie privée), gestion de la synchronisation des joueurs (s'assurer que les joueurs aient les questions et les réponses au bon moment, avoir un timer fonctionnel)
+
+La page d'accueil du projet devrait ressembler à ceci, il se peut qu'elle n'aie pas chargée entièrement après avoir lancé docker-compose up -d, il faudra donc recharger la page
+
+![plot](C:/Users/bacdi/Downloads/Projets VSCode/Cours M2 ESGI/Intégration d'IA via API/readme react.png)
