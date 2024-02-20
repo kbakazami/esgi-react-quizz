@@ -26,7 +26,13 @@ export function joinRoom(roomsArray, data, socket, io) {
             socket.join(room.roomId);
             socket.join(socket.id);
 
-            io.to(socket.id).emit('room-joined-waiting', true);
+            if(!room.isPlaying)
+            {
+                io.to(socket.id).emit('room-joined-waiting', true);
+            } else {
+                io.to(socket.id).emit('room-joined', true);
+                io.to(socket.id).emit('user-waiting', {value: true, room: room});
+            }
             io.to(room.roomId).emit('get-users', room.users);
 
         } else {
